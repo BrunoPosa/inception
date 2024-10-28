@@ -46,14 +46,14 @@ Here's how it works:
 
 #### Containers vs. Virtual Machines
 
-| Feature         | Containers                        | Virtual Machines |
-|:----------------|:----------------------------------|:-----------------------------------|
+| Feature         | Containers                        | Virtual Machines                     |
+|-----------------|-----------------------------------|--------------------------------------|
+| OS Dependency   | Shares host OS kernel             | Runs a full OS                       |
+| Size            | Lightweight (megabytes)           | Heavier (gigabytes)                  |
+| Startup Speed   | Fast, usually seconds             | Slower, usually minutes              |
+| Isolation Level | Process and file system isolation | Full isolation, including OS         |
+| Resource Usage  | Low                               | High, as each VM requires a full OS  |
 
-| OS Dependency	  | Shares host OS kernel	          | Runs a full OS                |
-| Size            |	Lightweight (megabytes)           | Heavier (gigabytes) |
-| Startup Speed   |	Fast, usually seconds             | Slower, usually minutes            |
-| Isolation Level |	Process and file system isolation |	Full isolation, including OS       |
-| Resource Usage  |	Low	                              |High, as each VM requires a full OS |
 
 #### Why Containers are Popular?
 Containers are ideal for creating microservices architectures, where each service runs in its own container and communicates over a network. This is beneficial for:
