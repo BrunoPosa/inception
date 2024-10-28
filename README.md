@@ -47,7 +47,7 @@ Here's how it works:
 #### Containers vs. Virtual Machines
 
 | Feature         | Containers                        | Virtual Machines |
-|-----------------|-----------------------------------|------------------------------------|
+|:----------------|:----------------------------------|:-----------------------------------|
 
 | OS Dependency	  | Shares host OS kernel	          | Runs a full OS                |
 | Size            |	Lightweight (megabytes)           | Heavier (gigabytes) |
