@@ -90,5 +90,9 @@ After insallation do:
     * Connecting to the Docker daemon through its socket requires you to add yourself to the docker group: "sudo addgroup tmenkovi docker"
     * Installing Docker Compose: "sudo apk add docker-cli-compose"
 
+    #### Connecting my github with VM:
+
+    * Genereting ssh-key: type: "ssh-keygen", then 2 times enter. And it will create it. Copy your .pub key and add it at your github. Now you can clone your git repository and work in it :D
+
 
 
