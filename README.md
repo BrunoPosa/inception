@@ -81,14 +81,14 @@ After insallation do:
 
 #### Installation
 
-    * First connect using ssh at terminal: ssh localhost -p 4241
-    * Update Alpine: "sudo apk update && sudo apk upgrade"
-    * then type: "sudo vi /etc/apk/repositories" and uncomment first line and save and close.
-    * Install Docker and Docker Compose: "sudo apk add docker docker-compose"
-    * run: "sudo apk add --update docker openrc"
-    * To start the Docker daemon at boot, run: "sudo rc-update add docker boot", execute: "service docker status" to ensure the status is running. If it is stoped type: "sudo service docker start" and check again: "service docker status"
-    * Connecting to the Docker daemon through its socket requires you to add yourself to the docker group: "sudo addgroup tmenkovi docker"
-    * Installing Docker Compose: "sudo apk add docker-cli-compose"
+* First connect using ssh at terminal: ssh localhost -p 4241
+* Update Alpine: "sudo apk update && sudo apk upgrade"
+* then type: "sudo vi /etc/apk/repositories" and uncomment first line and save and close.
+* Install Docker and Docker Compose: "sudo apk add docker docker-compose"
+* run: "sudo apk add --update docker openrc"
+* To start the Docker daemon at boot, run: "sudo rc-update add docker boot", execute: "service docker status" to ensure the status is running. If it is stoped type: "sudo service docker start" and check again: "service docker status"
+* Connecting to the Docker daemon through its socket requires you to add yourself to the docker group: "sudo addgroup tmenkovi docker"
+* Installing Docker Compose: "sudo apk add docker-cli-compose"
 
 ### Project
 
