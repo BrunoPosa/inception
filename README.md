@@ -37,7 +37,7 @@ This project enhances system administration skills using Docker. Multiple Docker
 
 1. Instalation of VirtualBox: https://www.virtualbox.org/. It is needed for instalinsling the operating system we want to use.
 
-2. Download Alpine Linux: https://dl-cdn.alpinelinux.org/alpine/v3.20/releases/x86_64/. Download alpine-virt-3.20.4-x86_64.iso file.
+2. Download Alpine Linux: https://dl-cdn.alpinelinux.org/alpine/v3.20/releases/x86_64/. Download alpine-virt-3.20.6-x86_64.iso file.
 
 After insallation do:
 * Open Virtual Box. 
@@ -63,7 +63,7 @@ After insallation do:
     * Now go back to VM and type reboot.
     * Now login with root and root password.
     * Now lets install sudo: vi /etc/apk/repositories. When it opens type i and then delete "#" infront of last line. Now click esc, then ":wq" to save and exit.
-    * Now type "su -", "apk update", "apk add sudo", "sudo visude".
+    * Now type "su -", "apk update", "apk add sudo", "sudo visudo".
     * When it opens click "i" and uncomment (delete "#" infront of) %sudo ALL=(ALL:ALL) ALL. Then exit.
     * After this check if group sudo exist with the command: getent group sudo. If no output is given it means that not. So we have to create the group and after add our user in the group: "addgroup sudo", "adduser tmenkovi sudo". Where tmenkovi is my username and sudo is the groupt. Now you are good to go to exercise sudo writes with your user.
 * Installation and Configuration of SSH:
