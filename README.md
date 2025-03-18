@@ -791,8 +791,7 @@ scp -P 4241 -r /home/tmenkovi/inception_eval tmenkovi@localhost:~/
 * Clean up Docker by stopping, removing, and deleting all containers, images, volumes and networks:
 ```
 docker stop $(docker ps -qa); docker rm $(docker ps -qa); 
-docker rmi -f $(docker images -qa); docker volume rm $(docker volume ls -q); doc
-ker network rm $(docker network ls -q) 2>/dev/null
+docker rmi -f $(docker images -qa); docker volume rm $(docker volume ls -q); docker network rm $(docker network ls -q) 2>/dev/null
 ```
 
 * View the whole Inception installation and configuration process with messages:
@@ -882,7 +881,7 @@ mysql -h mariadb -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE"
 ```
 OR
 ```
-mysql -h mariadb -u emansoor -p
+mysql -h mariadb -u tanjaaa -p
 ```
 
 #### Nginx:
