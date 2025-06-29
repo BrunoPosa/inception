@@ -1,32 +1,42 @@
-#!/bin/sh
+#!/usr/bin/env sh
+set -eu
 
 echo "--> Setting up MariaDB..."
-START=$(date +%s)
 
-chmod -R 755 /var/lib/mysql
+: "${MYSQL_ROOT_PASSWORD:?Missing MYSQL_ROOT_PASSWORD}"
+: "${WORDPRESS_DATABASE_NAME:?Missing WORDPRESS_DATABASE_NAME}"
+: "${WORDPRESS_DATABASE_USER:?Missing WORDPRESS_DATABASE_USER}"
+: "${WORDPRESS_DATABASE_PASSWORD:?Missing WORDPRESS_DATABASE_PASSWORD}"
+
 mkdir -p /run/mysqld
-chown -R mysql:mysql /var/lib/mysql /run/mysqld
+chown -R mysql:mysql /run/mysqld /var/lib/mysql
+chmod 750 /var/lib/mysql
 
-if [ ! -d "/var/lib/mysql/mysql" ]; then
-        mariadb-install-db --basedir=/usr --user=mysql --datadir=/var/lib/mysql >/dev/null
-        mysqld --user=mysql --bootstrap << EOF
+# Only init if empty
+if [ -z "$(ls -A /var/lib/mysql)" ]; then
+    echo "Initializing database..."
+    mariadb-install-db --basedir=/usr --user=mysql --datadir=/var/lib/mysql >/dev/null
+
+    echo "Running bootstrap SQL..."
+    mysqld --user=mysql --bootstrap <<-EOF
 USE mysql;
 FLUSH PRIVILEGES;
+ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';
 
-ALTER user 'root'@'localhost' IDENTIFIED BY "$MYSQL_ROOT_PASSWORD";
-CREATE DATABASE $WORDPRESS_DATABASE_NAME CHARACTER SET utf8 COLLATE utf8_general_ci;
-CREATE USER '$WORDPRESS_DATABASE_USER'@'%' IDENTIFIED BY "$WORDPRESS_DATABASE_PASSWORD";
-GRANT ALL PRIVILEGES ON $WORDPRESS_DATABASE_NAME.* TO '$WORDPRESS_DATABASE_USER'@'%';
-CREATE USER '$WORDPRESS_DATABASE_USER'@'localhost' IDENTIFIED BY "$WORDPRESS_DATABASE_PASSWORD";
-GRANT ALL PRIVILEGES ON $WORDPRESS_DATABASE_NAME.* TO '$WORDPRESS_DATABASE_USER'@'localhost';
+CREATE DATABASE IF NOT EXISTS \`${WORDPRESS_DATABASE_NAME}\` CHARACTER SET utf8 COLLATE utf8_general_ci;
+
+CREATE USER IF NOT EXISTS '${WORDPRESS_DATABASE_USER}'@'%' IDENTIFIED BY '${WORDPRESS_DATABASE_PASSWORD}';
+GRANT ALL PRIVILEGES ON \`${WORDPRESS_DATABASE_NAME}\`.* TO '${WORDPRESS_DATABASE_USER}'@'%';
+
+CREATE USER IF NOT EXISTS '${WORDPRESS_DATABASE_USER}'@'localhost' IDENTIFIED BY '${WORDPRESS_DATABASE_PASSWORD}';
+GRANT ALL PRIVILEGES ON \`${WORDPRESS_DATABASE_NAME}\`.* TO '${WORDPRESS_DATABASE_USER}'@'localhost';
+
 FLUSH PRIVILEGES;
 EOF
+
 else
-        echo "MariaDB already installed."
+    echo "MariaDB already initialized."
 fi
 
 echo "Starting MariaDB..."
 exec mysqld --defaults-file=/etc/my.cnf.d/mariadb_config 2>&1
-
-END=$(date +%s)
-echo "MariaDB initialized in $((END - START)) seconds"

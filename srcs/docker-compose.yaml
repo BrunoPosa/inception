@@ -26,7 +26,7 @@ services:
   mariadb:
     container_name: mariadb
     build: ./requirements/mariadb
-    image: mariadb:local
+    image: mariadb:${MARIADB_VERSION}
     restart: always
     env_file: .env
     ports:
@@ -36,10 +36,10 @@ services:
     networks:
       - network
     healthcheck:
-      test: ["CMD", "mariadb-admin", "ping", "--protocol=tcp", "--host=localhost", "-u", "$WORDPRESS_DB_USER", "-p$WORDPRESS_DB_PASSWORD"]
+      test: ["CMD-SHELL", "mariadb-admin ping --protocol=tcp --host=localhost -u $WORDPRESS_DATABASE_USER -p$WORDPRESS_DATABASE_USER_PASSWORD"]
       interval: 10s
       timeout: 5s
-      retries: 10
+      retries: 30
 
   wordpress:
     container_name: wordpress
