@@ -1,5 +1,19 @@
 #!/bin/sh
 
+
+WORDPRESS_ADMIN_PASSWORD="$(cat /run/secrets/wp-admin_password)"
+WORDPRESS_USER_PASSWORD="$(cat /run/secrets/wp-usr_password)"
+WORDPRESS_DATABASE_USER_PASSWORD="$(cat /run/secrets/wp-db-usr_password)"
+
+: "${WORDPRESS_DATABASE_NAME:?Missing WORDPRESS_DATABASE_NAME}"
+: "${WORDPRESS_DATABASE_USER:?Missing WORDPRESS_DATABASE_USER}"
+: "${DOMAIN_NAME:?Missing DOMAIN_NAME}"
+: "${WORDPRESS_TITLE:?Missing WORDPRESS_TITLE}"
+: "${WORDPRESS_ADMIN:?Missing WORDPRESS_ADMIN}"
+: "${WORDPRESS_ADMIN_EMAIL:?Missing WORDPRESS_ADMIN_EMAIL}"
+: "${WORDPRESS_USER:?Missing WORDPRESS_USER}"
+: "${WORDPRESS_USER_EMAIL:?Missing WORDPRESS_USER_EMAIL}"
+
 echo "==> Setting up WordPress..."
 echo "memory_limit = 512M" >> /etc/php83/php.ini
 

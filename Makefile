@@ -2,7 +2,7 @@ DATA_DIR=/home/bposa/data
 MARIADB_DIR=$(DATA_DIR)/mariadb
 WORDPRESS_DIR=$(DATA_DIR)/wordpress
 
-COMPOSE_FILE=srcs/docker-compose.yaml
+COMPOSE_FILE=srcs/compose.yaml
 
 all: $(MARIADB_DIR) $(WORDPRESS_DIR)
 	@$(MAKE) images

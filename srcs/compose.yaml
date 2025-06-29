@@ -1,5 +1,18 @@
-#version: '3.8' # Use version 3.8 of Docker Compose
-#reformatted
+#yaml extension with anchor for reuse
+x-env-file: &env
+  - .env
+
+secrets:
+  wp-admin_password:
+    file: ../secrets/wp-admin_password.txt
+  wp-usr_password:
+    file: ../secrets/wp-usr_password.txt
+  wp-db_password:
+    file: ../secrets/wp-db_password.txt
+  wp-db-usr_password:
+    file: ../secrets/wp-db-usr_password.txt
+  mysql_root_password:
+    file: ../secrets/mysql_root_password.txt
 
 volumes:
   mariadb:
@@ -28,7 +41,7 @@ services:
     build: ./requirements/mariadb
     image: mariadb:${MARIADB_VERSION}
     restart: always
-    env_file: .env
+    env_file: *env
     ports:
       - "3306:3306"
     volumes:
@@ -36,17 +49,20 @@ services:
     networks:
       - network
     healthcheck:
-      test: ["CMD-SHELL", "mariadb-admin ping --protocol=tcp --host=localhost -u $WORDPRESS_DATABASE_USER -p$WORDPRESS_DATABASE_USER_PASSWORD"]
+      test: ["CMD-SHELL", "mariadb-admin ping -h 127.0.0.1 -u \"$$WORDPRESS_DATABASE_USER\" --password=\"$$(cat /run/secrets/wp-db-usr_password)\" --silent"]
       interval: 10s
       timeout: 5s
-      retries: 30
+      retries: 10
+    secrets:
+      - mysql_root_password
+      - wp-db-usr_password
 
   wordpress:
     container_name: wordpress
     build: ./requirements/wordpress
     image: wordpress:local
     restart: always
-    env_file: .env
+    env_file: *env
     networks:
       - network
     volumes:
@@ -59,13 +75,17 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    secrets:
+      - wp-admin_password
+      - wp-usr_password
+      - wp-db-usr_password
 
   nginx:
     container_name: nginx
     build: ./requirements/nginx
     image: nginx:local
     restart: always
-    env_file: .env
+    env_file: *env
     depends_on:
       wordpress:
         condition: service_healthy

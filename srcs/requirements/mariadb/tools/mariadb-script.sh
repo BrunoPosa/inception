@@ -3,10 +3,11 @@ set -eu
 
 echo "--> Setting up MariaDB..."
 
-: "${MYSQL_ROOT_PASSWORD:?Missing MYSQL_ROOT_PASSWORD}"
+MYSQL_ROOT_PASSWORD="$(cat /run/secrets/mysql_root_password)"
+WORDPRESS_DATABASE_USER_PASSWORD="$(cat /run/secrets/wp-db-usr_password)"
+
 : "${WORDPRESS_DATABASE_NAME:?Missing WORDPRESS_DATABASE_NAME}"
 : "${WORDPRESS_DATABASE_USER:?Missing WORDPRESS_DATABASE_USER}"
-: "${WORDPRESS_DATABASE_PASSWORD:?Missing WORDPRESS_DATABASE_PASSWORD}"
 
 mkdir -p /run/mysqld
 chown -R mysql:mysql /run/mysqld /var/lib/mysql
@@ -18,19 +19,13 @@ if [ -z "$(ls -A /var/lib/mysql)" ]; then
     mariadb-install-db --basedir=/usr --user=mysql --datadir=/var/lib/mysql >/dev/null
 
     echo "Running bootstrap SQL..."
-    mysqld --user=mysql --bootstrap <<-EOF
+    mysqld --user=mysql --bootstrap <<EOF
 USE mysql;
 FLUSH PRIVILEGES;
 ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';
-
 CREATE DATABASE IF NOT EXISTS \`${WORDPRESS_DATABASE_NAME}\` CHARACTER SET utf8 COLLATE utf8_general_ci;
-
-CREATE USER IF NOT EXISTS '${WORDPRESS_DATABASE_USER}'@'%' IDENTIFIED BY '${WORDPRESS_DATABASE_PASSWORD}';
+CREATE USER IF NOT EXISTS '${WORDPRESS_DATABASE_USER}'@'%' IDENTIFIED BY '${WORDPRESS_DATABASE_USER_PASSWORD}';
 GRANT ALL PRIVILEGES ON \`${WORDPRESS_DATABASE_NAME}\`.* TO '${WORDPRESS_DATABASE_USER}'@'%';
-
-CREATE USER IF NOT EXISTS '${WORDPRESS_DATABASE_USER}'@'localhost' IDENTIFIED BY '${WORDPRESS_DATABASE_PASSWORD}';
-GRANT ALL PRIVILEGES ON \`${WORDPRESS_DATABASE_NAME}\`.* TO '${WORDPRESS_DATABASE_USER}'@'localhost';
-
 FLUSH PRIVILEGES;
 EOF
 
