@@ -1,0 +1,77 @@
+#version: '3.8' # Use version 3.8 of Docker Compose
+#reformatted
+
+volumes:
+  mariadb:
+    name: mariadb
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/bposa/data/mariadb
+  wordpress:
+    name: wordpress
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/bposa/data/wordpress
+
+networks:
+  network:
+    name: docker-network
+    driver: bridge
+
+services:
+  mariadb:
+    container_name: mariadb
+    build: ./requirements/mariadb
+    image: mariadb:local
+    restart: always
+    env_file: .env
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb:/var/lib/mysql
+    networks:
+      - network
+    healthcheck:
+      test: ["CMD", "mariadb-admin", "ping", "--protocol=tcp", "--host=localhost", "-u", "$WORDPRESS_DB_USER", "-p$WORDPRESS_DB_PASSWORD"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  wordpress:
+    container_name: wordpress
+    build: ./requirements/wordpress
+    image: wordpress:local
+    restart: always
+    env_file: .env
+    networks:
+      - network
+    volumes:
+      - wordpress:/var/www/html
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "test", "-f", "/var/www/html/wp-login.php"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  nginx:
+    container_name: nginx
+    build: ./requirements/nginx
+    image: nginx:local
+    restart: always
+    env_file: .env
+    depends_on:
+      wordpress:
+        condition: service_healthy
+    networks:
+      - network
+    ports:
+      - "443:443"
+    volumes:
+      - wordpress:/var/www/html
