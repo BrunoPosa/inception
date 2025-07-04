@@ -27,17 +27,36 @@ down:
 
 clean:
 	@echo "Removing containers, images, volumes.."
-	@docker compose -f $(COMPOSE_FILE) down --rmi all -v
+	@docker compose -f $(COMPOSE_FILE) down --rmi all --volumes --remove-orphans
 
 fclean: clean
+	@echo "Stopping all containers..."
+	- docker compose -f $(COMPOSE_FILE) stop
+
+	@echo "Removing all containers..."
+	- docker rm -f $(docker ps -aq) 2>/dev/null
+
+	@echo "Removing all images..."
+	- docker rmi -f $(docker images -aq) 2>/dev/null
+
+	@echo "Removing all volumes..."
+	- docker volume rm $(docker volume ls -q) 2>/dev/null
+
+	@echo "Removing unused networks..."
+	- docker network rm $(docker network ls | awk '/ bridge|host|none /{next} {print $1}') 2>/dev/null
+
+	@echo "Pruning build cache..."
+	- docker builder prune -af
+
+	@echo "Final system prune..."
+	- docker system prune -af --volumes
+
 	@echo "Removing data directories.."
-	sudo rm -rf $(DATA_DIR)	
-	docker system prune -af --volumes || true
-	docker rm -f $$(docker ps -aq) || true
-	docker rmi -f $$(docker images -aq) || true
-	docker volume rm $$(docker volume ls -q) || true
-	docker network prune -f || true
-	docker builder prune -af || true
+	- rm -rf $(DATA_DIR)
+	# sudo?
+
+	@echo "Cleanup done. Current disk usage:"
+	- docker system df
 
 re: fclean all
 
