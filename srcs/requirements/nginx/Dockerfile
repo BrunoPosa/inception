@@ -15,4 +15,4 @@ COPY --chmod=0644 ./conf/nginx.conf /etc/nginx/nginx.conf
 	
 EXPOSE 443
 
-CMD ["nginx", "-c", "/etc/nginx/nginx.conf", "-g", "daemon off;"]
+ENTRYPOINT ["nginx", "-c", "/etc/nginx/nginx.conf", "-g", "daemon off;"]

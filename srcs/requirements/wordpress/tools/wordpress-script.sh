@@ -28,31 +28,31 @@ echo "==> Checking if MariaDB is running before proceeding with WordPress setup.
 mariadb-admin ping --protocol=tcp --host=mariadb -u $WORDPRESS_DATABASE_USER --password=$WORDPRESS_DATABASE_USER_PASSWORD --wait=300
 
 if [ ! -f /var/www/html/wp-config.php ]; then
-    echo "==> Downloading, Installing, Configuring WordPress files (core essentials)..."
-    wp core download --allow-root
+	echo "==> Downloading, Installing, Configuring WordPress files (core essentials)..."
+	wp core download --allow-root
 
-    wp config create \
-        --dbname=$WORDPRESS_DATABASE_NAME \
-        --dbuser=$WORDPRESS_DATABASE_USER \
-        --dbpass=$WORDPRESS_DATABASE_USER_PASSWORD \
-        --dbhost=mariadb \
-        --force
+	wp config create \
+		--dbname=$WORDPRESS_DATABASE_NAME \
+		--dbuser=$WORDPRESS_DATABASE_USER \
+		--dbpass=$WORDPRESS_DATABASE_USER_PASSWORD \
+		--dbhost=mariadb \
+		--force
 
-    wp core install --url="$DOMAIN_NAME" --title="$WORDPRESS_TITLE" \
-        --admin_user="$WORDPRESS_ADMIN" \
-        --admin_password="$WORDPRESS_ADMIN_PASSWORD" \
-        --admin_email="$WORDPRESS_ADMIN_EMAIL" \
-        --allow-root \
-        --skip-email \
-        --path=/var/www/html
+	wp core install --url="$DOMAIN_NAME" --title="$WORDPRESS_TITLE" \
+		--admin_user="$WORDPRESS_ADMIN" \
+		--admin_password="$WORDPRESS_ADMIN_PASSWORD" \
+		--admin_email="$WORDPRESS_ADMIN_EMAIL" \
+		--allow-root \
+		--skip-email \
+		--path=/var/www/html
 
-    echo "==> Creating a WordPress user..."
-    wp user create \
-        --allow-root \
-        $WORDPRESS_USER $WORDPRESS_USER_EMAIL \
-        --user_pass=$WORDPRESS_USER_PASSWORD
+	echo "==> Creating a WordPress user..."
+	wp user create \
+		--allow-root \
+		$WORDPRESS_USER $WORDPRESS_USER_EMAIL \
+		--user_pass=$WORDPRESS_USER_PASSWORD
 else
-    echo "==> WordPress is already downloaded, installed, and configured."
+	echo "==> WordPress is already downloaded, installed, and configured."
 fi
 
 chown -R www-data:www-data /var/www/html

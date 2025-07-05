@@ -40,7 +40,7 @@ services:
     container_name: mariadb
     build: ./requirements/mariadb
     image: mariadb:${MARIADB_VERSION}
-    restart: always
+    restart: unless-stopped
     env_file: *env
     ports:
       - "3306:3306"
@@ -61,17 +61,19 @@ services:
     container_name: wordpress
     build: ./requirements/wordpress
     image: wordpress:local
-    restart: always
+    restart: unless-stopped
     env_file: *env
     networks:
       - network
+    expose:
+      - 9000
     volumes:
       - wordpress:/var/www/html
     depends_on:
       mariadb:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "test", "-f", "/var/www/html/wp-login.php"]
+      test: ["CMD-SHELL", "pgrep -f php-fpm83 || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -83,8 +85,8 @@ services:
   nginx:
     container_name: nginx
     build: ./requirements/nginx
-    image: nginx:local
-    restart: always
+    image: nginx:${NGINX_VERSION}
+    restart: unless-stopped
     env_file: *env
     depends_on:
       wordpress:
