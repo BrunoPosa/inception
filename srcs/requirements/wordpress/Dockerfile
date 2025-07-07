@@ -10,10 +10,6 @@ RUN apk add --no-cache \
 		php83-mysqli=8.3.19-r0 \
 		php83-iconv=8.3.19-r0 \
 		wget=1.25.0-r0 \
-	php83-dom=8.3.19-r0 \
-    php83-simplexml=8.3.19-r0 \
-    php83-mbstring=8.3.19-r0 \
-    php83-tokenizer=8.3.19-r0 \
 	&& adduser -D -H -s /sbin/nologin -g www-data -G www-data www-data \
 	&& mkdir -p /var/www/wp /var/www/html \
 	&& chown -R www-data:www-data /var/www/wp /var/www/html
