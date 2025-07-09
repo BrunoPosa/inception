@@ -1,22 +1,58 @@
+include ./srcs/.env
+export
+
 DATA_DIR=/home/bposa/data
 MARIADB_DIR=$(DATA_DIR)/mariadb
 WORDPRESS_DIR=$(DATA_DIR)/wordpress
+CERT_DIR=./secrets
+
+CERT_FILE=$(CERT_DIR)/public_certificate.crt
+KEY_FILE=$(CERT_DIR)/private.key
 
 COMPOSE_FILE=srcs/compose.yaml
 
-all: $(MARIADB_DIR) $(WORDPRESS_DIR)
-	@$(MAKE) images
+
+
+all: certif $(DATA_DIR) $(MARIADB_DIR) $(WORDPRESS_DIR)
+	@$(MAKE) img
 	@$(MAKE) up
 
+clean:
+	@echo "Removing containers, images, volumes.."
+	@docker compose -f $(COMPOSE_FILE) down --rmi all --volumes --remove-orphans
+
+fclean: clean
+	@echo "Disk usage before fclean:"
+	- docker system df
+
+	- docker compose -f $(COMPOSE_FILE) stop
+	- docker rm -f $(docker ps -aq) 2>/dev/null
+	- docker rmi -f $(docker images -aq) 2>/dev/null
+	- docker volume rm $(docker volume ls -q) 2>/dev/null
+	- docker network rm $(docker network ls -q) 2>/dev/null
+
+	- docker builder prune -af
+	- docker system prune -af --volumes
+
+	- sudo rm -rf $(DATA_DIR)
+
+	@echo "Cleanup done. Disk usage:"
+	- docker system df
+
+re: fclean all
+
+
+
+$(DATA_DIR):
+	@mkdir -p $@
+
 $(MARIADB_DIR):
-	@echo "Creating MariaDB data directory..."
 	@mkdir -p $@
 
 $(WORDPRESS_DIR):
-	@echo "Creating WordPress data directory..."
 	@mkdir -p $@
 
-images:
+img:
 	@docker compose -f $(COMPOSE_FILE) build
 
 up:
@@ -25,38 +61,11 @@ up:
 down:
 	@docker compose -f $(COMPOSE_FILE) down
 
-clean:
-	@echo "Removing containers, images, volumes.."
-	@docker compose -f $(COMPOSE_FILE) down --rmi all --volumes --remove-orphans
+certif:
+	@test -d $(CERT_DIR) || (echo "ERROR: Folder $(CERT_DIR) missing!" && exit 1)
+	openssl req -x509 -nodes \
+		-out $(CERT_FILE) \
+		-keyout $(KEY_FILE) \
+		-subj "/C=FI/ST=Uusimaa/L=Helsinki/O=42/OU=Hive/CN=$(DOMAIN_NAME)" 2>/dev/null
 
-fclean: clean #docker stop $(docker ps -qa); docker rm $(docker ps -qa); docker rmi -f $(docker images -qa); docker volume rm $(docker volume ls -q); docker network rm $(docker network ls -q) 2>/dev/null
-	@echo "Stopping all containers..."
-	- docker compose -f $(COMPOSE_FILE) stop
-
-	@echo "Removing all containers..."
-	- docker rm -f $(docker ps -aq) 2>/dev/null
-
-	@echo "Removing all images..."
-	- docker rmi -f $(docker images -aq) 2>/dev/null
-
-	@echo "Removing all volumes..."
-	- docker volume rm $(docker volume ls -q) 2>/dev/null
-
-	@echo "Removing unused networks..."
-	- docker network rm $(docker network ls | awk '/ bridge|host|none /{next} {print $1}') 2>/dev/null
-
-	@echo "Pruning build cache..."
-	- docker builder prune -af
-
-	@echo "Final system prune..."
-	- docker system prune -af --volumes
-
-	@echo "Removing data directories.."
-	- sudo rm -rf $(DATA_DIR)
-
-	@echo "Cleanup done. Current disk usage:"
-	- docker system df
-
-re: fclean all
-
-.PHONY: all clean fclean re up down images
+.PHONY: all clean fclean re up down img certif

@@ -13,6 +13,10 @@ secrets:
     file: ../secrets/wp-db-usr_password.txt
   mysql_root_password:
     file: ../secrets/mysql_root_password.txt
+  ssl-cert:
+    file: ../secrets/public_certificate.crt
+  ssl-key:
+    file: ../secrets/private.key
 
 volumes:
   mariadb:
@@ -49,10 +53,10 @@ services:
     networks:
       - network
     healthcheck:
-      test: ["CMD-SHELL", "mariadb-admin ping -h 127.0.0.1 -u \"$$WORDPRESS_DATABASE_USER\" --password=\"$$(cat /run/secrets/wp-db-usr_password)\" --silent"]
+      test: ["CMD-SHELL", "mariadb-admin ping -h 127.0.0.1 -u \"$$WORDPRESS_DATABASE_USER\" --password=\"$$(cat /run/secrets/wp-db-usr_password)\" "]
       interval: 10s
-      timeout: 5s
-      retries: 10
+      timeout: 10s
+      retries: 15
     secrets:
       - mysql_root_password
       - wp-db-usr_password
@@ -97,3 +101,8 @@ services:
       - "443:443"
     volumes:
       - wordpress:/var/www/html
+      - ../secrets/public_certificate.crt:/etc/nginx/ssl/public_certificate.crt:ro
+      - ../secrets/private.key:/etc/nginx/ssl/private.key:ro
+    secrets:
+      - ssl-cert
+      - ssl-key
