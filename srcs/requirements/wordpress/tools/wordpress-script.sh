@@ -59,4 +59,3 @@ chmod -R 755 /var/www/html/
 
 echo "==> Running PHP-FPM in the foreground (to prevent the container from stopping)..."
 php-fpm83 -F
-
