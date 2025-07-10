@@ -55,8 +55,6 @@ else
 	echo "==> WordPress is already downloaded, installed, and configured."
 fi
 
-chown -R www-data:www-data /var/www/html
-
 chmod -R 755 /var/www/html/
 
 echo "==> Running PHP-FPM in the foreground (to prevent the container from stopping)..."
