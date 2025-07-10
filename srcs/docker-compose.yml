@@ -101,17 +101,17 @@ services:
       - "443:443"
     volumes:
       - wordpress:/var/www/html
-      - ./requirements/static-site:/var/www/static-site
+      - ./requirements/bonus:/var/www/bonus
       - ../secrets/public_certificate.crt:/etc/nginx/ssl/public_certificate.crt:ro
       - ../secrets/private.key:/etc/nginx/ssl/private.key:ro
     secrets:
       - ssl-cert
       - ssl-key
 
-  static:
-    container_name: static
-    build: ./requirements/static-site
-    image: static:0.1
+  bonus:
+    container_name: bonus
+    build: ./requirements/bonus
+    image: bonus:0.1
     restart: unless-stopped
     env_file: *env
     networks:

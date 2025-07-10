@@ -9,7 +9,7 @@ CERT_DIR=./secrets
 CERT_FILE=$(CERT_DIR)/public_certificate.crt
 KEY_FILE=$(CERT_DIR)/private.key
 
-COMPOSE_FILE=srcs/compose.yaml
+COMPOSE_FILE=srcs/docker-compose.yml
 
 
 
