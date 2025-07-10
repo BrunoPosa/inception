@@ -4,11 +4,13 @@ FROM alpine:3.21.3
 
 RUN apk add --no-cache \
 		nginx=1.26.3-r0 \
-		openssl=3.3.3-r0 \
+		openssl=3.3.4-r0 \
 	&& adduser -D -H -s /sbin/nologin -g www-data -G www-data www-data
 
+
 COPY --chmod=0644 ./conf/nginx.conf /etc/nginx/nginx.conf
+COPY --chmod=0755 ./tools/nginx-script.sh /usr/local/bin/nginx-script.sh
 
 EXPOSE 443
 
-ENTRYPOINT ["nginx", "-c", "/etc/nginx/nginx.conf", "-g", "daemon off;"]
+ENTRYPOINT ["/usr/local/bin/nginx-script.sh"]
