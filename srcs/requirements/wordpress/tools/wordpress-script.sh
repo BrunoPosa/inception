@@ -29,7 +29,7 @@ mariadb-admin ping --protocol=tcp --host=mariadb -u $WORDPRESS_DATABASE_USER --p
 
 if [ ! -f /var/www/html/wp-config.php ]; then
 	echo "==> Downloading, Installing, Configuring WordPress files (core essentials)..."
-	wp core download --allow-root
+	wp core download --allow-root --version=$WP_VERSION
 
 	wp config create \
 		--dbname=$WORDPRESS_DATABASE_NAME \

@@ -46,8 +46,8 @@ services:
     image: mariadb:${MARIADB_VERSION}
     restart: unless-stopped
     env_file: *env
-    ports:
-      - "3306:3306"
+    expose:
+      - 3306
     volumes:
       - mariadb:/var/lib/mysql
     networks:
@@ -64,7 +64,7 @@ services:
   wordpress:
     container_name: wordpress
     build: ./requirements/wordpress
-    image: wordpress:local
+    image: wordpress:${WP_VERSION}
     restart: unless-stopped
     env_file: *env
     networks:
